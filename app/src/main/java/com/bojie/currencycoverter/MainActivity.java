@@ -10,25 +10,25 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.List;
 
-import retrofit.Call;
 import retrofit.Callback;
-import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String API_URL = "https://api.fixer.io/";
-
-    EditText dollarField;
-    FixerIOService mFixerioService;
+    private EditText dollarField;
+    private CurrencyRestAdapter mCurrencyRestAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mCurrencyRestAdapter = new CurrencyRestAdapter();
+        getNowCurrencyForMain("USD");
+
+
         dollarField = (EditText) findViewById(R.id.editText);
         dollarField.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -46,79 +46,39 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        // Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        mFixerioService = retrofit.create(FixerIOService.class);
-
-
-//        mFixerioService.getCurrency("USD", new Callback<Currency>() {
-//            @Override
-//            public void onResponse(Response<Currency> response, Retrofit retrofit) {
-//                Currency currency = response.body();
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//
-//            }
-//        });
-
-//         mFixerioService.getCurrency("USD", new Callback<List<Currency>>() {
-//            @Override
-//            public void onResponse(Response<List<Currency>> response, Retrofit retrofit) {
-//                List<Currency> currencyList = response.body();
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//
-//            }
-//        });
-
-        Call<List<Currency>> call = mFixerioService.getCurrency("USD");
-        call.enqueue(new Callback<List<Currency>>() {
-            @Override
-            public void onResponse(Response<List<Currency>> response, Retrofit retrofit) {
-                if (response.isSuccess()){
-                    List<Currency> currencyList = response.body();
-                    for (Currency currency:currencyList) {
-                        Log.d("!!!!!!!", currency.getBase());
-                    }
-                } else {
-                    try {
-                        Log.e("Response error", response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        });
-
-
     }
 
     public void btnConvert(View view) {
 
-       btnConvertClicked();
+        btnConvertClicked();
 
     }
 
-    private void btnConvertClicked(){
+    private void btnConvertClicked() {
         double usd = Double.parseDouble(dollarField.getText().toString());
         //Log.i("dollarField", dollarField.getText().toString());
         double cny = Utils.uSDToCNY(usd);
         DecimalFormat df = new DecimalFormat("#.00");
         Toast.makeText(this, "CNY: " + df.format(cny), Toast.LENGTH_LONG).show();
+    }
+
+    private void getNowCurrencyForMain(String base) {
+        try {
+            mCurrencyRestAdapter.getNowCurrency(base, new Callback() {
+                @Override
+                public void onResponse(Response response, Retrofit retrofit) {
+                    Currency currency = (Currency) response.body();
+                    Log.d("!!!!!", currency.getRates().getCNY()+"");
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.i("onFailure", t.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
