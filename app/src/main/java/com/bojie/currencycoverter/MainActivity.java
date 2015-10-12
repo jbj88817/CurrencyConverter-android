@@ -8,26 +8,33 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.text.DecimalFormat;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static String TAG = MainActivity.class.getSimpleName();
     private EditText dollarField;
-    private CurrencyRestAdapter mCurrencyRestAdapter;
+
+    // json object response url
+    private String urlBaseUSD = "http://api.fixer.io/latest?base=USD";
+    private double rateUsdToCny;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mCurrencyRestAdapter = new CurrencyRestAdapter();
-        getNowCurrencyForMain("USD");
 
+        getRates();
 
         dollarField = (EditText) findViewById(R.id.editText);
         dollarField.setOnKeyListener(new View.OnKeyListener() {
@@ -57,28 +64,42 @@ public class MainActivity extends AppCompatActivity {
     private void btnConvertClicked() {
         double usd = Double.parseDouble(dollarField.getText().toString());
         //Log.i("dollarField", dollarField.getText().toString());
-        double cny = Utils.uSDToCNY(usd);
+        double cny = rateUsdToCny * usd;
         DecimalFormat df = new DecimalFormat("#.00");
         Toast.makeText(this, "CNY: " + df.format(cny), Toast.LENGTH_LONG).show();
     }
 
-    private void getNowCurrencyForMain(String base) {
-        try {
-            mCurrencyRestAdapter.getNowCurrency(base, new Callback() {
-                @Override
-                public void onResponse(Response response, Retrofit retrofit) {
-                    Currency currency = (Currency) response.body();
-                    Log.d("!!!!!", currency.getRates().getCNY()+"");
-                }
 
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.i("onFailure", t.getMessage());
+    private void getRates(){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                urlBaseUSD, (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+
+                try {
+                    String date = response.getString("date");
+                    JSONObject rates = response.getJSONObject("rates");
+                    rateUsdToCny = rates.getDouble("CNY");
+                    Log.d("rateUsdToCny", rateUsdToCny+"");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
                 }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
 }

@@ -1,19 +1,30 @@
 package com.bojie.currencycoverter;
 
 /**
- * Created by bojiejiang on 10/9/15.
+ * Created by bojiejiang on 10/11/15.
  */
-public class Currency {
+public class CurrencyRate {
 
     /**
      * base : USD
-     * date : 2015-10-08
-     * rates : {"AUD":1.3919,"BGN":1.7379,"BRL":3.8719,"CAD":1.3047,"CHF":0.97165,"CNY":6.3539,"CZK":24.095,"DKK":6.6297,"GBP":0.65452,"HKD":7.7501,"HRK":6.7652,"HUF":277.39,"IDR":13879,"ILS":3.8592,"INR":65.096,"JPY":119.89,"KRW":1160,"MXN":16.61,"MYR":4.2207,"NOK":8.1913,"NZD":1.515,"PHP":46.137,"PLN":3.7605,"RON":3.9241,"RUB":62.494,"SEK":8.2451,"SGD":1.4119,"THB":35.987,"TRY":2.9334,"ZAR":13.467,"EUR":0.88857}
+     * date : 2015-10-09
+     * rates : {"AUD":1.3644,"BGN":1.7214,"BRL":3.7494,"CAD":1.2936,"CHF":0.96101,"CNY":6.3452,"CZK":23.859,"DKK":6.5657,"GBP":0.65191,"HKD":7.7501,"HRK":6.7145,"HUF":274.24,"IDR":13507,"ILS":3.8242,"INR":64.8,"JPY":120.27,"KRW":1142.4,"MXN":16.394,"MYR":4.1295,"NOK":8.0879,"NZD":1.493,"PHP":45.718,"PLN":3.7115,"RON":3.8858,"RUB":61.049,"SEK":8.1573,"SGD":1.3954,"THB":35.55,"TRY":2.902,"ZAR":13.261,"EUR":0.88013}
      */
 
     private String base;
     private String date;
     private RatesEntity rates;
+
+
+
+    public CurrencyRate() {
+    }
+
+    public CurrencyRate(String base, String date, RatesEntity rates) {
+        this.base = base;
+        this.date = date;
+        this.rates = rates;
+    }
 
     public void setBase(String base) {
         this.base = base;
@@ -41,37 +52,37 @@ public class Currency {
 
     public static class RatesEntity {
         /**
-         * AUD : 1.3919
-         * BGN : 1.7379
-         * BRL : 3.8719
-         * CAD : 1.3047
-         * CHF : 0.97165
-         * CNY : 6.3539
-         * CZK : 24.095
-         * DKK : 6.6297
-         * GBP : 0.65452
+         * AUD : 1.3644
+         * BGN : 1.7214
+         * BRL : 3.7494
+         * CAD : 1.2936
+         * CHF : 0.96101
+         * CNY : 6.3452
+         * CZK : 23.859
+         * DKK : 6.5657
+         * GBP : 0.65191
          * HKD : 7.7501
-         * HRK : 6.7652
-         * HUF : 277.39
-         * IDR : 13879.0
-         * ILS : 3.8592
-         * INR : 65.096
-         * JPY : 119.89
-         * KRW : 1160.0
-         * MXN : 16.61
-         * MYR : 4.2207
-         * NOK : 8.1913
-         * NZD : 1.515
-         * PHP : 46.137
-         * PLN : 3.7605
-         * RON : 3.9241
-         * RUB : 62.494
-         * SEK : 8.2451
-         * SGD : 1.4119
-         * THB : 35.987
-         * TRY : 2.9334
-         * ZAR : 13.467
-         * EUR : 0.88857
+         * HRK : 6.7145
+         * HUF : 274.24
+         * IDR : 13507
+         * ILS : 3.8242
+         * INR : 64.8
+         * JPY : 120.27
+         * KRW : 1142.4
+         * MXN : 16.394
+         * MYR : 4.1295
+         * NOK : 8.0879
+         * NZD : 1.493
+         * PHP : 45.718
+         * PLN : 3.7115
+         * RON : 3.8858
+         * RUB : 61.049
+         * SEK : 8.1573
+         * SGD : 1.3954
+         * THB : 35.55
+         * TRY : 2.902
+         * ZAR : 13.261
+         * EUR : 0.88013
          */
 
         private double AUD;
@@ -86,7 +97,7 @@ public class Currency {
         private double HKD;
         private double HRK;
         private double HUF;
-        private double IDR;
+        private int IDR;
         private double ILS;
         private double INR;
         private double JPY;
@@ -154,7 +165,7 @@ public class Currency {
             this.HUF = HUF;
         }
 
-        public void setIDR(double IDR) {
+        public void setIDR(int IDR) {
             this.IDR = IDR;
         }
 
@@ -278,7 +289,7 @@ public class Currency {
             return HUF;
         }
 
-        public double getIDR() {
+        public int getIDR() {
             return IDR;
         }
 
